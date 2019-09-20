@@ -51,6 +51,21 @@ if ( !function_exists( 'hwcoe_ufl_child_icon_url' ) ) {
 define( "HWCOE_UFL_CHILD_INC_DIR", get_stylesheet_directory() . "/inc/modules" );
 
 /*
+* Adds Category for Faculty Page
+*/
+function hwcoechild_insert_category() {
+	wp_insert_term(
+		'faculty-pg',
+		'category',
+		array(
+		  'description'	=> 'This category is only used for faculty pages.',
+		  'slug' 		=> 'faculty-pg'
+		)
+	);
+}
+add_action( 'after_setup_theme', 'hwcoechild_insert_category' );
+
+/*
 * Visual Editor Styles
 */
 

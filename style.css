@@ -294,7 +294,7 @@ margin: 0;
 }
 
 /*Issuu PDF Viewer*/
-.embed-wrapper {
+.post-4789 .embed-wrapper, .category-newsletter .embed-wrapper {
 	height: 900px;
 }
 
