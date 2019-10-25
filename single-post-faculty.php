@@ -14,19 +14,11 @@ get_header(); ?>
   <div class="col-sm-8 faculty_details">
 	  <div class="row">
 		<div class="col-md-3">
-			<?php 
-				$image    = get_field( 'faculty_portrait' );
-				$alt      = $image['alt'];
-				$img_src  = $image['sizes']['large'];
-			?>
-			<p><img src="<?php echo $img_src; ?>" alt="<?php echo $alt; ?>" class="img-full"></p>
+			<?php echo hwcoe_ufl_post_featured_image(); ?>
 		</div>
 		<div class="col-md-9">
+			<h1><?php echo get_the_title(); ?></h1>			
 			<?php 
-				if(get_field('faculty_title')){ //if the field is not empty
-					echo '<h1>' . get_field('faculty_title') . '</h1>'; //display it
-				} 
-
 				if(get_field('faculty_job_title')){ //if the field is not empty
 					echo '<p><em>' . get_field('faculty_job_title') . '</em></p>'; //display it
 				} 
@@ -56,10 +48,6 @@ get_header(); ?>
 						echo '</p>'; //display it
 					} 
 			  
-					if(get_field('faculty_current_courses')){ //if the field is not empty
-						echo '<h3>Current Courses</h3><p>' . get_field('faculty_current_courses') . '</p>'; //display it
-					} 
-
 					if(get_field('faculty_education')){ //if the field is not empty
 						echo '<h3>Education</h3><p>' . get_field('faculty_education') . '</p>'; //display it
 					} 
@@ -75,6 +63,10 @@ get_header(); ?>
 					if(get_field('faculty_awards')){ //if the field is not empty
 						echo '<h3>Awards &amp; Distinctions</h3>' . get_field('faculty_awards'); //display it
 					} 
+
+			  		if(get_field('faculty_current_courses')){ //if the field is not empty
+						echo '<h3>Current Courses</h3><p>' . get_field('faculty_current_courses') . '</p>'; //display it
+					} 			  
 				?>
 		  </div>
 	  </div>
@@ -89,15 +81,25 @@ get_header(); ?>
 	  		if(get_field('faculty_fax')){ //if the field is not empty
         		echo '<p><strong>Fax:</strong> ' . get_field('faculty_fax') . '</p>'; //display it
 			} 
-
+	  
 	  		if(get_field('faculty_email')){ //if the field is not empty
-        		echo '<p><strong>Email:</strong> ' . get_field('faculty_email') . '</p>'; //display it
-			} 
+        		echo '<p><strong>Email:</strong> <a href="mailto:' . get_field('faculty_email') . '">' . get_field('faculty_email') . '</a></p>'; //display it
+			} 	  
 
-	  		if(get_field('faculty_website')){ //if the field is not empty
-        		echo '<p><strong>Website:</strong> ' . get_field('faculty_website') . '</p>'; //display it
-			} 
-
+			if ( have_rows('faculty_websites') ):
+				echo '<p><strong>Website(s):</strong><br />';		
+				while( have_rows('faculty_websites') ): the_row();
+					echo '<a href="' . get_sub_field('website_url') . '" target="_blank">' ;
+						if(get_sub_field('url_text')){
+							echo get_sub_field('url_text') ;
+						} else {
+							echo get_sub_field('website_url') ;							
+						}
+					echo	'</a><br />'; //display it
+				endwhile;
+				echo '</p>';
+			endif;  
+	  
 	  		if(get_field('faculty_office')){ //if the field is not empty
         		echo '<p><strong>Office:</strong> ' . get_field('faculty_office') . '</p>'; //display it
 			} 
