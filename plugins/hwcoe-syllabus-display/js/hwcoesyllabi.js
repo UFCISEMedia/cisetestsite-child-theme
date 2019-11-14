@@ -1,5 +1,5 @@
 /*!
- * HWCOE UFL Child Theme scripts
+ * HWCOE SYLLABI DISPLAY scripts
  */
 
 jQuery(function($) {
@@ -8,7 +8,7 @@ jQuery(function($) {
 	$('#syllabi-table').DataTable( {
         "dom": 'lf<"table-wrapper"t>ip',
 		//responsive: true,
-		"pageLength": 100
+		"pageLength": 50
 	});
 	
 });

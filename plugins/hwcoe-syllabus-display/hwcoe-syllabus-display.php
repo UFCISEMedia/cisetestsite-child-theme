@@ -1,9 +1,9 @@
 <?php
 /*
 Plugin Name: HWCOE Syllabi Display
-Description: This plugin allows admin to display a dynamic table of entries using the Syllabus Upload custom_post_type. Use this shortcode to display the table: <strong>[syllabi_table]</strong>.
-Requirements: Advanced Custom Fields with the Student Registration Modules field group; hwcoe-ufl-child theme with career fair modifications; Optional: Gravity Forms with 
-Version: 1.0
+Description: This plugin allows admin to display a dynamic table of entries using the Syllabus Upload custom_post_type. Use this shortcode to display the table: <strong>[syllabi-table]</strong>.
+Requirements: Advanced Custom Fields with the Student Registration Modules field group; hwcoe-ufl-child theme with career fair modifications; Gravity Forms with the Syllabi Uploads form and Gravity Forms + Custom Post Types plugin. 
+Version: 1.4
 Author: Allison Logan
 Author URI: http://allisoncandreva.com/
 */
@@ -19,6 +19,7 @@ function create_post_type() {
       ),
       'public' => true,
 	  'menu_position' => 4,
+	  'menu_icon' => 'dashicons-text-page',
       'has_archive' => true,
     )
   );
@@ -31,6 +32,7 @@ add_filter( 'manage_edit-hwcoe-syllabi_columns', 'hwcoe_syllabi_columns' ) ;
 function hwcoe_syllabi_columns( $columns ) {
 
 	$columns = array(
+		'cb' => '&lt;input type="checkbox" />',
 		'title' => __( 'Title' ),
 		'instructor' => __( 'Instructor' ),
 		'number' => __( 'Course Number' ),
@@ -112,6 +114,120 @@ function manage_syllabi_columns( $column, $post_id ) {
 	}
 }
 
+//Make columns sortable in the Admin Edit panel
+add_filter( 'manage_edit-hwcoe-syllabi_sortable_columns', 'hwcoe_syllabi_sortable_columns' ) ;
+
+function hwcoe_syllabi_sortable_columns( $columns ) {
+
+	$columns['instructor'] = 'Instructor';
+	$columns['semester'] = 'Semester';
+	$columns['year'] = 'Year';
+
+	return $columns;
+}
+
+// Only run our customization on the 'edit.php' page in the admin.
+add_action( 'load-edit.php', 'my_edit_hwcoe_syllabi_load' );
+
+function my_edit_hwcoe_syllabi_load() {
+	add_filter( 'request', 'my_sort_hwcoe_syllabi' );
+}
+
+// Sorts the custom hwcoe-syllabi columns.
+function my_sort_hwcoe_syllabi( $vars ) {
+
+	/* Check if we're viewing the 'hwcoe-syllabi' post type. */
+	if ( isset( $vars['post_type'] ) && 'hwcoe-syllabi' == $vars['post_type'] ) {
+
+		/* Check if 'orderby' is set to 'instructor'. */
+		if ( isset( $vars['orderby'] ) && 'Instructor' == $vars['orderby'] ) {
+
+			/* Merge the query vars with our custom variables. */
+			$vars = array_merge(
+				$vars,
+				array(
+					'meta_key' => 'su_instructor',
+					'orderby' => 'meta_value'
+				)
+			);
+		}
+
+		/* Check if 'orderby' is set to 'semester'. */
+		if ( isset( $vars['orderby'] ) && 'Semester' == $vars['orderby'] ) {
+
+			/* Merge the query vars with our custom variables. */
+			$vars = array_merge(
+				$vars,
+				array(
+					'meta_key' => 'su_semester',
+					'orderby' => 'meta_value'
+				)
+			);
+		}
+		
+		/* Check if 'orderby' is set to 'year'. */
+		if ( isset( $vars['orderby'] ) && 'Year' == $vars['orderby'] ) {
+
+			/* Merge the query vars with our custom variables. */
+			$vars = array_merge(
+				$vars,
+				array(
+					'meta_key' => 'su_year',
+					'orderby' => 'meta_value_num'
+				)
+			);
+		}
+	}
+
+	return $vars;
+}
+
+//Customize the search of admin panel edit page
+add_filter( 'posts_join', 'hwcoe_syllabi_search' );
+function hwcoe_syllabi_search ( $join ) {
+    global $pagenow, $wpdb;
+
+    // I want the filter only when performing a search on edit page of Custom Post Type named "hwcoe-syllabi".
+    if ( is_admin() && 'edit.php' === $pagenow && 'hwcoe-syllabi' === $_GET['post_type'] && ! empty( $_GET['s'] ) ) {    
+        $join .= 'LEFT JOIN ' . $wpdb->postmeta . ' ON ' . $wpdb->posts . '.ID = ' . $wpdb->postmeta . '.post_id ';
+    }
+    return $join;
+}
+
+add_filter( 'posts_where', 'hwcoe_syllabi_search_where' );
+function hwcoe_syllabi_search_where( $where ) {
+    global $pagenow, $wpdb;
+
+    // I want the filter only when performing a search on edit page of Custom Post Type named "hwcoe-syllabi".
+    if ( is_admin() && 'edit.php' === $pagenow && 'hwcoe-syllabi' === $_GET['post_type'] && ! empty( $_GET['s'] ) ) {
+        $where = preg_replace(
+            "/\(\s*" . $wpdb->posts . ".post_title\s+LIKE\s*(\'[^\']+\')\s*\)/",
+            "(" . $wpdb->posts . ".post_title LIKE $1) OR (" . $wpdb->postmeta . ".meta_value LIKE $1)", $where );
+    }
+    return $where;
+}
+
+function hwcoe_syllabi_search_distinct( $where ){
+    global $pagenow, $wpdb;
+
+    if ( is_admin() && $pagenow=='edit.php' && $_GET['post_type']=='hwcoe-syllabi' && $_GET['s'] != '') {
+    return "DISTINCT";
+
+    }
+    return $where;
+}
+add_filter( 'posts_distinct', 'hwcoe_syllabi_search_distinct' );
+//Ends search of admin panel edit page
+
+/* Enqueue assets */
+add_action( 'wp_enqueue_scripts', 'hwcoe_syllabi_assets' );
+function hwcoe_syllabi_assets() {
+    wp_register_style( 'hwcoe-syllabi-datatables', plugins_url( '/css/datatables.min.css' , __FILE__ ) );
+    wp_register_style( 'hwcoe-syllabi', plugins_url( '/css/hwcoesyllabi.css' , __FILE__ ) );
+
+    wp_register_script( 'hwcoe-syllabi-datatables', plugins_url( '/js/datatables.min.js' , __FILE__ ), array( 'jquery' ), null, true );
+    wp_register_script( 'hwcoe-syllabi', plugins_url( '/js/hwcoesyllabi.js' , __FILE__ ), array( 'jquery' ), null, true );
+}
 
 /*Convert Name field to Title Case*/
 $theformID = RGFormsModel::get_form_id('Syllabi Upload');
@@ -426,6 +542,12 @@ new GW_Rename_Uploaded_Files( array(
 
 /*Plugin shortcode*/
 function syllabi_table_shortcode() {
+
+	// Assets 
+	wp_enqueue_style( 'hwcoe-syllabi-datatables' );
+    wp_enqueue_style( 'hwcoe-syllabi' );
+    wp_enqueue_script( 'hwcoe-syllabi-datatables' );
+    wp_enqueue_script( 'hwcoe-syllabi' );
 	
 	//Query
 	$the_query = new WP_Query(array( 'post_type' => 'hwcoe-syllabi', 'posts_per_page' => 100 ));
@@ -467,4 +589,4 @@ function syllabi_table_shortcode() {
 	return $output;
 }
 
-add_shortcode('syllabi_table', 'syllabi_table_shortcode'); 
+add_shortcode('syllabi-table', 'syllabi_table_shortcode'); 
