@@ -216,6 +216,9 @@
 					} ?>
 					<?php if(get_sub_field('link')){ //if the field is not empty
 					echo '<p><a href="' . get_sub_field('link') . '" target="_blank">Read more >>></a></p>'; //display it
+					} ?>
+					<?php if(get_sub_field('external_link')){ //if the field is not empty
+					echo '<p><a href="' . get_sub_field('external_link') . '" target="_blank">Read more >>></a></p>'; //display it
 					} ?>	
 				</div>
 			<?php endwhile // the_row ?>
