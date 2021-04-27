@@ -189,6 +189,10 @@ figcaption {
 	text-transform: none;
 }
 
+.faculty-news-links .wp-show-posts:not(.wp-show-posts-columns) .wp-show-posts-single:not(:last-child) {
+	margin-bottom: .5em;
+}
+
 /*Faculty Contact Information Styles*/
 .faculty_contact_information h3 { 
 	margin-bottom: 10px;
@@ -469,6 +473,23 @@ bwg_container {
 
 #bwg_container1_0 #bwg_container2_0 .bwg_slideshow_dots_container_0 {
 	bottom: -30px !important;
+}
+
+/*Contact Card*/
+.contact-card {
+	background: #fffdf5;
+	padding: 30px 40px;	
+	min-height: 400px;
+	margin-bottom: 20px;
+}
+
+.contact-card-img {
+	padding: 0 20px 0 0;
+}
+
+.contact-card img {
+	width: 100%;
+	max-width: 260px;
 }
 
 /*Footer*/
