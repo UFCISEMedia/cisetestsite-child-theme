@@ -14,7 +14,7 @@ function hwcoe_ufl_child_image_sizes(){
 	// available for inserting in pages/posts
 	add_image_size('nl_feature_img', 490, 339, array('center', 'center'));
 	add_image_size('nl_images', 200, 200, array('center', 'top'));
-	add_image_size('digital_nl_images', 400, 280, array('center', 'top'));
+	add_image_size('digital_nl_images', 264, 184, array('center', 'top'));
 
 }
 add_action( 'after_setup_theme', 'hwcoe_ufl_child_image_sizes' );

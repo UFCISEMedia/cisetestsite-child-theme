@@ -1,6 +1,6 @@
 <?php
 /**
- * UF HWCOE Child theme example functions and definitions.
+ * UF HWCOE Child theme functions and definitions.
 *
 */
 
@@ -53,21 +53,6 @@ define( "HWCOE_UFL_CHILD_INC_DIR", get_stylesheet_directory() . "/inc/modules" )
 require get_stylesheet_directory() . '/inc/media.php';
 
 require get_stylesheet_directory() . '/inc/childshortcodes.php';
-
-/*
-* Adds Category for Faculty Page
-*/
-function hwcoechild_insert_category() {
-	wp_insert_term(
-		'faculty-pg',
-		'category',
-		array(
-		  'description'	=> 'This category is only used for faculty pages.',
-		  'slug' 		=> 'faculty-pg'
-		)
-	);
-}
-add_action( 'after_setup_theme', 'hwcoechild_insert_category' );
 
 /*
 * Visual Editor Styles
