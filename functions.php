@@ -54,6 +54,18 @@ require get_stylesheet_directory() . '/inc/media.php';
 
 require get_stylesheet_directory() . '/inc/childshortcodes.php';
 
+/* 
+* Gravity Forms
+*/
+
+add_filter( 'gform_other_choice_value', 'set_placeholder', 10, 2 );
+function set_placeholder( $placeholder, $field ) {
+    if ( is_object( $field ) && 5 === $field->id && 11 === $field->formId ){ // 5 and 11 to your field id and form id number.
+        $placeholder = 'Other (enter the country of your citizenship)';
+    }
+    return $placeholder;
+}
+
 /*
 * Visual Editor Styles
 */
